@@ -1,12 +1,11 @@
-SHOWS_URL = 'http://tve-atcnbc.nbcuni.com/ep-live/2/oxygen/shows/iPad'
-EPISODES_URL = 'http://tve-atcnbc.nbcuni.com/ep-live/2/oxygen/container/x/iPad/%s'
-
+SHOWS_URL = 'http://tve-atcnbce.nbcuni.com/live/3/oxygen/containers/iPad'
+EPISODES_URL = 'http://tve-atcnbce.nbcuni.com/live/3/oxygen/containers/%s/iPad?filterBy=episode'
 ####################################################################################################
 def Start():
 
 	ObjectContainer.title1 = 'Oxygen'
 	HTTP.CacheTime = CACHE_1HOUR
-	HTTP.Headers['User-Agent'] = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.117 Safari/537.36'
+	HTTP.Headers['User-Agent'] = 'BRNetworking/2.7.0.1449 (iPad;iPhone OS-8.1)'
 
 ####################################################################################################
 @handler('/video/oxygen', 'Oxygen')
@@ -42,12 +41,9 @@ def Episodes(show_id, show):
 
 	oc = ObjectContainer(title2=show)
 
-	for episode in JSON.ObjectFromURL(EPISODES_URL % show_id)['assetsX']:
+	for episode in JSON.ObjectFromURL(EPISODES_URL % show_id)['results']:
 
-		if episode['requiresAuth'] is not False:
-			continue
-		# Instead of not pulling any video clips, we pull videos with a duration over 5 minutes so we get web series videos
-		if episode['totalDuration'] < 300000:
+		if episode['type'] != 'video' or episode['subtype'] != 'episode' or episode['requiresAuth'] is not False:
 			continue
 
 		url = 'http://www.oxygen.com/#%s|%s' % (show_id, episode['assetID'])
